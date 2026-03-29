@@ -1,0 +1,30 @@
+# Synthetic Worlds Configuration
+# All values can be overridden with environment variables.
+
+# Server
+# PORT: 7878
+
+# Database
+# DATABASE_URL: postgres://postgres:postgres@localhost:5432/synthetic_worlds?sslmode=disable
+
+# Redis
+# REDIS_URL: redis://localhost:6379/0
+
+# Authentication
+# AUTH_MODE: static
+# SYNTH_API_KEY: your-secret-api-key
+
+# LLM (Bring Your Own Key)
+# At least one is required:
+# ANTHROPIC_API_KEY: sk-ant-...
+# OPENAI_API_KEY: sk-...
+# XAI_API_KEY: xai-...
+
+# Default model for response generation
+# DEFAULT_MODEL: claude-sonnet-4-6
+
+# World settings
+# WORLD_TTL_SECONDS: 3600
+
+# Optional: ClickHouse for call analytics (if not set, uses Postgres)
+# CLICKHOUSE_URL: clickhouse://default:@localhost:9000/synthetic_worlds

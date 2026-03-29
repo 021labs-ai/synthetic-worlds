@@ -1,0 +1,54 @@
+services:
+  syntheticworlds:
+    build: .
+    ports:
+      - "7878:7878"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/synthetic_worlds?sslmode=disable
+      REDIS_URL: redis://redis:6379/0
+      SYNTH_API_KEY: ${SYNTH_API_KEY:-change-me-in-production}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      XAI_API_KEY: ${XAI_API_KEY:-}
+      DEFAULT_MODEL: ${DEFAULT_MODEL:-claude-sonnet-4-6}
+      PORT: "7878"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./migrations/000001_init.up.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_DB: synthetic_worlds
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redisdata:/data
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  redisdata:
