@@ -261,3 +261,23 @@ type WorldStats struct {
 	CacheHitRate  float64        `json:"cache_hit_rate"`
 	ErrorCount    int            `json:"error_count"`
 }
+
+// Fixture is a deterministic replay record for a world: calls to ToolName
+// whose input matches Input exactly (or any input when Input is nil) return
+// Output verbatim.
+type Fixture struct {
+	ToolName string         `json:"tool_name" validate:"required"`
+	Input    map[string]any `json:"input,omitempty"`
+	Output   map[string]any `json:"output" validate:"required"`
+}
+
+// SeedFixturesRequest replaces a world's fixtures.
+type SeedFixturesRequest struct {
+	Fixtures []Fixture `json:"fixtures" validate:"required"`
+}
+
+// SeedFixturesResponse reports how many fixtures are active.
+type SeedFixturesResponse struct {
+	WorldID      string `json:"world_id"`
+	FixtureCount int    `json:"fixture_count"`
+}

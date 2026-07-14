@@ -10,6 +10,8 @@ import (
 type SyntheticService interface {
 	CreateWorld(ctx context.Context, auth *domain.AuthContext, params domain.CreateWorldParams) (*domain.WorldResponse, error)
 	ExecuteCall(ctx context.Context, auth *domain.AuthContext, req domain.CallRequest) (*domain.CallResult, error)
+	SeedFixtures(ctx context.Context, auth *domain.AuthContext, worldID string, fixtures []domain.Fixture) (int, error)
+	InvokeReplay(ctx context.Context, auth *domain.AuthContext, worldID, toolName string, input map[string]any) (*domain.CallResult, error)
 	ResetWorld(ctx context.Context, auth *domain.AuthContext, worldID string, hard bool) (*domain.ResetWorldResponse, error)
 	CloseWorld(ctx context.Context, auth *domain.AuthContext, worldID string) (*domain.DeleteWorldResponse, error)
 	ListWorlds(ctx context.Context, auth *domain.AuthContext, params domain.WorldListParams) (*domain.WorldListResult, error)

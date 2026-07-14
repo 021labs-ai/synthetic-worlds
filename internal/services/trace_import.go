@@ -109,10 +109,10 @@ func (s *TraceImportService) ImportLangfuse(ctx context.Context, data []byte) (*
 func (s *TraceImportService) ImportLangsmith(ctx context.Context, data []byte) (*domain.TraceImportResult, error) {
 	// LangSmith export format: array of runs
 	var langsmithData []struct {
-		Name     string `json:"name"`
-		RunType  string `json:"run_type"`
-		Inputs   any    `json:"inputs"`
-		Outputs  any    `json:"outputs"`
+		Name      string `json:"name"`
+		RunType   string `json:"run_type"`
+		Inputs    any    `json:"inputs"`
+		Outputs   any    `json:"outputs"`
 		ChildRuns []struct {
 			Name    string `json:"name"`
 			RunType string `json:"run_type"`

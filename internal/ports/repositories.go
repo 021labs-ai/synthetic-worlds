@@ -39,6 +39,8 @@ type SyntheticStateAdapter interface {
 	GetWorld(ctx context.Context, worldID string) (*domain.WorldState, error)
 	RefreshTTL(ctx context.Context, worldID string, ttl time.Duration) error
 	IncrStepCount(ctx context.Context, worldID string) (int64, error)
+	GetFixtures(ctx context.Context, worldID string) (string, error)
+	SetFixtures(ctx context.Context, worldID string, fixtures string) error
 	GetTaskState(ctx context.Context, worldID string) (string, error)
 	SetTaskState(ctx context.Context, worldID string, taskState string) error
 	GetCachedResponse(ctx context.Context, worldID, idempotencyKey string) (string, error)
