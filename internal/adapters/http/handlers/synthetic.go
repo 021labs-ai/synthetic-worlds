@@ -244,3 +244,52 @@ func handleError(c *fiber.Ctx, err error) error {
 	}
 	return c.Status(fiber.StatusInternalServerError).JSON(apierror.Internal("").ToResponse())
 }
+
+// SeedFixtures handles POST /v1/synthetic/worlds/:id/fixtures — replaces the
+// world's deterministic replay fixtures.
+func (h *SyntheticHandler) SeedFixtures(c *fiber.Ctx) error {
+	authCtx := middleware.GetAuthContext(c)
+	if authCtx == nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(apierror.MissingAuth().ToResponse())
+	}
+	worldID := c.Params("id")
+	if worldID == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(apierror.Validation("world id required", nil).ToResponse())
+	}
+	var req domain.SeedFixturesRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(apierror.Validation("invalid request body", nil).ToResponse())
+	}
+	count, err := h.service.SeedFixtures(c.Context(), authCtx, worldID, req.Fixtures)
+	if err != nil {
+		return handleError(c, err)
+	}
+	return c.JSON(domain.SeedFixturesResponse{WorldID: worldID, FixtureCount: count})
+}
+
+// InvokeReplay handles POST /v1/synthetic/worlds/:id/invoke/:tool — serves the
+// call verbatim from the world's fixtures (no LLM), 404 when unseeded.
+func (h *SyntheticHandler) InvokeReplay(c *fiber.Ctx) error {
+	authCtx := middleware.GetAuthContext(c)
+	if authCtx == nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(apierror.MissingAuth().ToResponse())
+	}
+	worldID := c.Params("id")
+	toolName := c.Params("tool")
+	if worldID == "" || toolName == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(apierror.Validation("world id and tool required", nil).ToResponse())
+	}
+	input := map[string]any{}
+	if len(c.Body()) > 0 {
+		if err := c.BodyParser(&input); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(apierror.Validation("invalid JSON body", nil).ToResponse())
+		}
+	}
+	result, err := h.service.InvokeReplay(c.Context(), authCtx, worldID, toolName, input)
+	if err != nil {
+		return handleError(c, err)
+	}
+	// the OUTPUT alone is the response body — this endpoint plays the role of
+	// a provider API, so callers (n8n httpRequest nodes) see the payload itself
+	return c.JSON(result.Output)
+}

@@ -31,6 +31,8 @@ func RegisterRoutes(
 	synthetic.Get("/worlds", syntheticHandler.ListWorlds)
 	synthetic.Get("/worlds/:id", syntheticHandler.GetWorld)
 	synthetic.Get("/worlds/:id/state", syntheticHandler.GetWorldState)
+	synthetic.Post("/worlds/:id/fixtures", syntheticHandler.SeedFixtures)
+	synthetic.Post("/worlds/:id/invoke/:tool", syntheticHandler.InvokeReplay)
 	synthetic.Get("/worlds/:id/calls", syntheticHandler.ListWorldCalls)
 	synthetic.Get("/calls", syntheticHandler.ListCalls)
 

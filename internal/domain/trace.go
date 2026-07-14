@@ -27,7 +27,7 @@ type TraceImportBatch struct {
 
 // TraceImport represents a single trace with its tool spans for import.
 type TraceImport struct {
-	Name  string          `json:"name"`
+	Name  string           `json:"name"`
 	Spans []ToolSpanImport `json:"spans" validate:"required,min=1"`
 }
 

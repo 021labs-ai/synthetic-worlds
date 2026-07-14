@@ -130,6 +130,26 @@ func (s *SyntheticState) SetCachedResponse(ctx context.Context, worldID, idempot
 	return nil
 }
 
+func (s *SyntheticState) SetFixtures(ctx context.Context, worldID string, fixtures string) error {
+	rdb := s.client.rdb
+	if err := rdb.HSet(ctx, worldKey(worldID), "fixtures", fixtures).Err(); err != nil {
+		return fmt.Errorf("failed to set fixtures: %w", err)
+	}
+	return nil
+}
+
+func (s *SyntheticState) GetFixtures(ctx context.Context, worldID string) (string, error) {
+	rdb := s.client.rdb
+	raw, err := rdb.HGet(ctx, worldKey(worldID), "fixtures").Result()
+	if err == goredis.Nil {
+		return "", nil
+	}
+	if err != nil {
+		return "", fmt.Errorf("failed to get fixtures: %w", err)
+	}
+	return raw, nil
+}
+
 func (s *SyntheticState) GetTaskState(ctx context.Context, worldID string) (string, error) {
 	rdb := s.client.Redis()
 	raw, err := rdb.HGet(ctx, worldKey(worldID), "task_state").Result()
